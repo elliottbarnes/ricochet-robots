@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="A playable sliding-robot puzzle example from a Java group coursework project."
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <link rel="icon" href="./favicon.svg" />
+    <title>Ricochet Robots — think before you slide</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <header>
+      <a href="https://elliottbarnes.ca">ELLIOTT BARNES / PLAY</a
+      ><a href="https://github.com/elliottbarnes/ricochet-robots"
+        >GROUP PROJECT ↗</a
+      >
+    </header>
+    <main>
+      <div class="eyebrow">02 / Browser puzzle example</div>
+      <h1>Think before you slide.</h1>
+      <p class="intro">
+        A robot keeps moving until a wall or another robot stops it. Bring the
+        matching robot to the target. Sometimes, a teammate is the missing
+        piece.
+      </p>
+      <div class="layout">
+        <section class="stage">
+          <div class="stage-head">
+            <strong id="puzzle-name">Find the stopping point</strong
+            ><span class="badge" id="goal-label">BLUE TARGET</span>
+          </div>
+          <div class="board-wrap">
+            <canvas
+              id="board"
+              width="640"
+              height="640"
+              tabindex="0"
+              aria-label="Sixteen by sixteen robot board. Choose a robot, then use arrow keys or the direction buttons."
+              aria-describedby="positions status"
+              >Use a browser with Canvas support for the board.</canvas
+            >
+          </div>
+          <p class="status" id="status" role="status" aria-live="polite">
+            Select a robot and choose a direction.
+          </p>
+        </section>
+        <aside class="sidebar">
+          <section class="panel">
+            <dl class="stats">
+              <div>
+                <dt>Moves</dt>
+                <dd id="moves">0</dd>
+              </div>
+              <div>
+                <dt>Puzzle</dt>
+                <dd id="number">1 / 4</dd>
+              </div>
+            </dl>
+            <div class="field">
+              <label for="puzzle">Choose a puzzle</label
+              ><select id="puzzle">
+                <option value="0">1 · Find the stopping point</option>
+                <option value="1">2 · Around the corner</option>
+                <option value="2">3 · A little help</option>
+                <option value="3">4 · Across the board</option>
+              </select>
+            </div>
+            <h2>Choose your robot</h2>
+            <div class="robot-controls" id="robots">
+              <button aria-pressed="true" data-robot="0">1 · Blue</button
+              ><button aria-pressed="false" data-robot="1">2 · Green</button
+              ><button aria-pressed="false" data-robot="2">3 · Red</button
+              ><button aria-pressed="false" data-robot="3">4 · Amber</button>
+            </div>
+            <div class="dpad" aria-label="Move selected robot">
+              <button data-direction="up" aria-label="Move up">↑</button
+              ><button data-direction="left" aria-label="Move left">←</button
+              ><button data-direction="down" aria-label="Move down">↓</button
+              ><button data-direction="right" aria-label="Move right">→</button>
+            </div>
+            <div class="controls">
+              <button id="undo">Undo</button><button id="reset">Reset</button
+              ><button id="hint">Hint</button>
+            </div>
+            <p class="small" id="hint-text">
+              Follow a guided route when you need a hand.
+            </p>
+          </section>
+          <section class="panel">
+            <h2>The rules</h2>
+            <p>
+              Every slide counts as one move. Robots cannot stop halfway or pass
+              through one another. Passing over the target does not count.
+            </p>
+            <p>
+              Use <kbd>1</kbd>–<kbd>4</kbd> to choose a robot, then the arrow
+              keys. <kbd>Z</kbd> undoes a move.
+            </p>
+            <p id="positions" class="note"></p>
+            <p class="note">
+              Based on the standard board and color rules in the Java original.
+              Four practice puzzles; multiplayer bidding and the complex board
+              remain in the desktop project.
+            </p>
+          </section>
+        </aside>
+      </div>
+    </main>
+    <footer>
+      <span
+        >Browser example of group coursework, originally
+        comp2005-winter20-group3. Unofficial educational implementation;
+        original contributor credits are preserved.</span
+      ><a
+        href="https://github.com/elliottbarnes/ricochet-robots#java-desktop-original"
+        >Java original ↗</a
+      >
+    </footer>
+  </body>
+</html>
