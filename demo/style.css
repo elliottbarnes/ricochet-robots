@@ -1,12 +1,12 @@
 :root {
   color-scheme: dark;
-  --bg: #101219;
-  --panel: #181c26;
-  --line: #353c4c;
-  --text: #edf1f6;
-  --muted: #aab5c6;
-  --accent: #b0e882;
-  --dark: #15240d;
+  --bg: #f3ead6;
+  --panel: #fffaf0;
+  --line: #c8b98e;
+  --text: #293248;
+  --muted: #656451;
+  --accent: #3156a3;
+  --dark: #ffffff;
   font-family:
     ui-sans-serif,
     system-ui,
@@ -35,7 +35,7 @@ select {
 button,
 select {
   min-height: 44px;
-  background: #222936;
+  background: #f4ebd7;
   border: 1px solid var(--line);
   color: var(--text);
   padding: 10px 15px;
@@ -181,7 +181,7 @@ canvas {
   width: 100%;
   height: auto;
   touch-action: none;
-  background: #10151e;
+  background: #f6efdf;
 }
 .board-wrap {
   padding: 18px;
@@ -215,8 +215,8 @@ canvas {
   font-variant-numeric: tabular-nums;
 }
 kbd {
-  background: #252e3c;
-  border: 1px solid #465267;
+  background: #e5dcc7;
+  border: 1px solid #a49777;
   border-bottom-width: 2px;
   border-radius: 4px;
   padding: 1px 6px;
@@ -328,8 +328,8 @@ footer {
   }
 }
 :root {
-  --accent: #9ac5fa;
-  --dark: #15243c;
+  --accent: #254f96;
+  --dark: #e2e9f7;
 }
 .robot-controls {
   display: grid;
@@ -337,16 +337,16 @@ footer {
   gap: 8px;
 }
 .robot-controls button:nth-child(1) {
-  color: #91bfff;
+  color: #254f96;
 }
 .robot-controls button:nth-child(2) {
-  color: #91e3b8;
+  color: #266345;
 }
 .robot-controls button:nth-child(3) {
-  color: #ffa9ab;
+  color: #9e3438;
 }
 .robot-controls button:nth-child(4) {
-  color: #f3d389;
+  color: #775719;
 }
 .dpad {
   display: grid;
@@ -368,3 +368,7 @@ footer {
   max-width: 680px;
   margin: auto;
 }
+
+
+/* Ricochet Robots — birch tabletop and cobalt pieces */
+ :root{color-scheme:light}h1{font-family:Georgia,serif;font-weight:700;letter-spacing:-.035em}header{border-bottom:4px solid #d4a644}.stage{border:8px solid #b39159;border-radius:10px;box-shadow:0 9px 0 #dbcaa6}.panel{border-radius:8px;box-shadow:0 4px 0 #e5d6b9}.board-wrap{background:#e6d5b0}.eyebrow{letter-spacing:.16em}.stats dd{font-family:Georgia,serif}.badge{color:#775719}button.primary{color:#fff}
