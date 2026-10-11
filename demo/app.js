@@ -7,6 +7,7 @@ let puzzleIndex = 0,
   state = createPuzzle(PUZZLES[0]),
   selected = 0;
 const buttons = [...document.querySelectorAll("[data-robot]")];
+const robotOutlines = ["#3156a3", "#26714a", "#aa3840", "#876010"];
 function select(index) {
   selected = index;
   render();
@@ -35,9 +36,9 @@ function render() {
   document
     .querySelectorAll("[data-direction]")
     .forEach((button) => (button.disabled = state.solved));
-  ctx.fillStyle = "#10151e";
+  ctx.fillStyle = "#f6efdf";
   ctx.fillRect(0, 0, 640, 640);
-  ctx.strokeStyle = "#293444";
+  ctx.strokeStyle = "#d9cdb6";
   ctx.lineWidth = 1;
   for (let i = 0; i <= 16; i++) {
     ctx.beginPath();
@@ -48,10 +49,10 @@ function render() {
     ctx.stroke();
   }
   for (const [x, y] of BOARD.blocked) {
-    ctx.fillStyle = "#313a48";
+    ctx.fillStyle = "#b39159";
     ctx.fillRect(x * cell, y * cell, cell, cell);
   }
-  ctx.strokeStyle = "#b7c2d0";
+  ctx.strokeStyle = "#685538";
   ctx.lineWidth = 5;
   ctx.strokeRect(2.5, 2.5, 635, 635);
   for (const wall of BOARD.walls) {
@@ -65,7 +66,7 @@ function render() {
   }
   const tx = (state.target.x + 0.5) * cell,
     ty = (state.target.y + 0.5) * cell;
-  ctx.strokeStyle = ROBOTS[state.target.robot].color;
+  ctx.strokeStyle = robotOutlines[state.target.robot];
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(tx, ty - 15);
@@ -78,7 +79,7 @@ function render() {
     const px = (x + 0.5) * cell,
       py = (y + 0.5) * cell;
     if (index === selected) {
-      ctx.strokeStyle = "#fff";
+      ctx.strokeStyle = "#293248";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(px, py, 18, 0, Math.PI * 2);
@@ -88,6 +89,9 @@ function render() {
     ctx.beginPath();
     ctx.arc(px, py, 13, 0, Math.PI * 2);
     ctx.fill();
+    ctx.strokeStyle = robotOutlines[index];
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
     ctx.fillStyle = "#10151e";
     ctx.font = "bold 14px system-ui";
     ctx.textAlign = "center";
