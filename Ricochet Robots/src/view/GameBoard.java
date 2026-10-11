@@ -99,63 +99,42 @@ public class GameBoard implements Runnable{
 		handler.addObject(new Robot(120, 10, 22, 22, ID.Robot4, handler));
 	}
 
-	private void tick() {
-		
-		
-		
-	}
-	
-	private void render() {
-		bs = gameGui.getCanvas().getBufferStrategy();
-		if(bs==null) {
-			gameGui.getCanvas().createBufferStrategy(3);
-			return;
-		}
-		g = bs.getDrawGraphics();
-		g.setColor(Color.black);
-		g.fillRect(0, 0, 600, 600);
-		
-		handler.render(g);
-
-		//End Drawing
-		g.dispose();
-		bs.show();
-	}
-	private void init() {
-		gameGui = new GameGUI();
-		gameGui.setHandler(handler);
-	}
-	public void run() {
-		init();
-		while(running) {
-			tick();
-			render();
-		}
-		stop();
-	}
-
-	public synchronized void start() {
-		if(running) return;
-		thread = new Thread(this);
-		thread.start();
-		running = true;
-	}
-	public synchronized void stop() {
-		if(!running) return;
-		running = false;
-		try {
-			thread.join();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-	}
-	public static int clamp(int var, int min, int max) {
-		if(var>=max)
-			return var = max;
-		else if(var<=min) 
-			return var = min;
-		else
-			return var;
-	}
-
+    private javax.swing.Timer renderTimer;
+    private controller.SaveData loaded;
+    public GameBoard(controller.SaveData saved) {
+        this();
+        SessionState.restore(handler, saved);
+        loaded = saved;
+    }
+    public Handler getHandler() { return handler; }
+    private void render() {
+        if (!gameGui.isGameOpen()) { stop(); return; }
+        bs = gameGui.getCanvas().getBufferStrategy();
+        if (bs == null) { gameGui.getCanvas().createBufferStrategy(2); return; }
+        Graphics graphics = bs.getDrawGraphics();
+        try {
+            graphics.setColor(Color.black);
+            graphics.fillRect(0, 0, WIDTH, HEIGHT);
+            handler.render(graphics);
+        } finally { graphics.dispose(); }
+        bs.show();
+    }
+    public void run() {
+        gameGui = new GameGUI(handler, loaded);
+        renderTimer = new javax.swing.Timer(33, event -> render());
+        renderTimer.start();
+    }
+    public void start() {
+        if (running) return;
+        running = true;
+        if (javax.swing.SwingUtilities.isEventDispatchThread()) run();
+        else javax.swing.SwingUtilities.invokeLater(this);
+    }
+    public void stop() {
+        running = false;
+        if (renderTimer != null) renderTimer.stop();
+    }
+    public static int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
+    }
 }

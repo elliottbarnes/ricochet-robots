@@ -25,7 +25,13 @@ python3 scripts/build-java.py --test
 java -jar build/ricochet-robots.jar
 ```
 
-The script compiles the preserved source, packages its existing image resources, sets `controller.Driver` as the main class, and runs headless tests against the actual token-color and collision classes. Java 21 compilation and these headless checks have been verified. A complete desktop GUI/game-session acceptance pass has not been performed; historical UI limitations, including incomplete hint/load behavior, may remain. Only load saved games you created locally; the historical save format uses Java serialization.
+The script compiles the source, packages its existing image resources, sets `controller.Driver` as the main class, and runs headless checks against the actual desktop classes.
+
+Use **File → Save** to write a `.rrsave` file and **Load** on the main menu to resume it. Saves retain board/settings, robot positions, target sequence, scores, bids, selected player/robot, moves and remaining timer. The versioned, size-bounded plain-text format validates state before restoring; old Java-serialized saves are not supported.
+
+Enable hints in settings, choose a token, then use **File → Hint**. A bounded background search returns a route without moving pieces; difficult positions may exceed its search limit. Movement and hints share the same wall/robot rules. Each round resets bids, moves and its timer; a completed game stops accepting moves.
+
+Headless verification includes 54 route replays, actual active-round target selection, 2,000 reachable save/load states across both boards, completed-game movement, invalid/legacy/oversized saves, and all token colours. These checks do not replace exhaustive desktop session acceptance on every operating system.
 
 - `Ricochet Robots/src/controller/`: entry point, bidding, settings, timing, and saved-game support.
 - `Ricochet Robots/src/view/`: board, menus, robots, tokens, and movement.

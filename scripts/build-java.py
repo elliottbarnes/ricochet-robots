@@ -15,6 +15,8 @@ subprocess.run(['jar', '--create', '--file', 'build/ricochet-robots.jar', '--mai
 if '--test' in sys.argv:
     tests = root / 'build/java/tests'
     tests.mkdir(parents=True, exist_ok=True)
-    subprocess.run(['javac', '-cp', str(classes), '-d', str(tests), 'tests/java/view/RulesTest.java'], check=True)
-    subprocess.run(['java', '-Djava.awt.headless=true', '-cp', os.pathsep.join([str(classes), str(tests)]), 'view.RulesTest'], check=True)
+    subprocess.run(['javac', '-cp', str(classes), '-d', str(tests), *map(str, sorted((root / 'tests/java').rglob('*.java')))], check=True)
+    for source in sorted((root / 'tests/java').rglob('*Test.java')):
+        name = '.'.join(source.relative_to(root / 'tests/java').with_suffix('').parts)
+        subprocess.run(['java', '-Djava.awt.headless=true', '-cp', os.pathsep.join([str(classes), str(tests)]), name], check=True)
 print('Built build/ricochet-robots.jar from the preserved desktop source and resources.')

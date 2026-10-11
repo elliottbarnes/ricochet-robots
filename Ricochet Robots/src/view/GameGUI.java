@@ -33,17 +33,23 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 	private Move move;
 	private ChangeToken next;
 	private int moves;
+    private JButton btnUp, btnDown, btnLeft, btnRight, btnToken;
+    private JLabel lblMoveCount;
+    private JRadioButton rdbtnP1, rdbtnP2, rdbtnP3, rdbtnP4;
 	
-	public GameGUI() {
-		Display();
-	}
+    public GameGUI() { this(new Handler(), null); }
+    public GameGUI(Handler board, SaveData saved) {
+        handler = board;
+        Display();
+        if (saved != null) restoreSession(saved);
+    }
+    public boolean isGameOpen() { return frmTakeTurn.isDisplayable(); }
 	
 	public void Display() {
 		
 		//All classes needed in this class
 		sc = (SettingsController) Settings.object();
 		bidController = new BidController();
-		handler = new Handler();
 		next = new ChangeToken();
 		flag = false;
 		
@@ -61,23 +67,12 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 		
 		// Exit confirmation dialogue asking user to play a new game
 		
-		frmTakeTurn.addWindowListener(new WindowAdapter() {
-			  public void windowClosing(WindowEvent e) {
-				    int confirmed = JOptionPane.showConfirmDialog(null, 
-				        "Are you sure you want to exit the game? Yes to exit. No to play again.", "Exit Confirmation",
-				        JOptionPane.YES_NO_OPTION);
+        frmTakeTurn.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frmTakeTurn.addWindowListener(new WindowAdapter() {
+            @Override public void windowClosing(WindowEvent e) { returnToMenu(); }
+        });
 
-				    if (confirmed == JOptionPane.YES_OPTION) {
-				    	frmTakeTurn.setDefaultCloseOperation(frmTakeTurn.EXIT_ON_CLOSE);
-				    }
-				    else {
-				    	dispose();
-				    	new Settings();
-				    }
-				  }
-				});
-		
-		
+
 		//Left Panel
 		
 		leftPanel = new JPanel();
@@ -211,12 +206,12 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 		lblMoves.setBounds(32, 60, 50, 20);
 		rightPanel.add(lblMoves);
 		
-		JLabel lblMoveCount = new JLabel("");
+        lblMoveCount = new JLabel("0");
 		lblMoveCount.setFont(new Font("Chalkduster", Font.BOLD, 13));
 		lblMoveCount.setBounds(102, 60, 46, 20);
 		rightPanel.add(lblMoveCount);
 		
-		JButton btnToken = new JButton("Token");
+        btnToken = new JButton("Token");
 		btnToken.setFont(new Font("Chalkduster", Font.BOLD, 13));
 		btnToken.setBounds(50, 100, 89, 23);
 		rightPanel.add(btnToken);
@@ -374,22 +369,22 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 		bottomPanel.setSize(800, 200);
 		bottomPanel.setLayout(null);
 		
-		JButton btnUp = new JButton("UP");
+        btnUp = new JButton("UP");
 		btnUp.setFont(new Font("Chalkduster", Font.BOLD, 11));
 		btnUp.setBounds(10, 7, 75, 30);
 		bottomPanel.add(btnUp);
 		
-		JButton btnDown = new JButton("Down");
+        btnDown = new JButton("Down");
 		btnDown.setFont(new Font("Chalkduster", Font.BOLD, 11));
 		btnDown.setBounds(90, 7, 75, 30);
 		bottomPanel.add(btnDown);
 		
-		JButton btnRight = new JButton("Right");
+        btnRight = new JButton("Right");
 		btnRight.setFont(new Font("Chalkduster", Font.BOLD, 11));
 		btnRight.setBounds(250, 7, 75, 30);
 		bottomPanel.add(btnRight);
 		
-		JButton btnLeft = new JButton("Left");
+        btnLeft = new JButton("Left");
 		btnLeft.setFont(new Font("Chalkduster", Font.BOLD, 11));
 		btnLeft.setBounds(170, 7, 75, 30);
 		bottomPanel.add(btnLeft);
@@ -415,25 +410,25 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 		bottomPanel.add(rdbtnRobot4);
 		
 		
-		JRadioButton rdbtnP1 = new JRadioButton("P1");
+        rdbtnP1 = new JRadioButton("P1");
 		rdbtnP1.setForeground(sc.normal5);
 		rdbtnP1.setFont(new Font("Chalkduster", Font.BOLD, 10));
 		rdbtnP1.setBounds(575, 7, 52, 26);
 		bottomPanel.add(rdbtnP1);
 		
-		JRadioButton rdbtnP2 = new JRadioButton("P2");
+        rdbtnP2 = new JRadioButton("P2");
 		rdbtnP2.setForeground(new Color(93,58,155));
 		rdbtnP2.setFont(new Font("Chalkduster", Font.BOLD, 10));
 		rdbtnP2.setBounds(625, 7, 52, 26);
 		bottomPanel.add(rdbtnP2);
 		
-		JRadioButton rdbtnP3 = new JRadioButton("P3");
+        rdbtnP3 = new JRadioButton("P3");
 		rdbtnP3.setForeground(new Color(26,133,255));
 		rdbtnP3.setFont(new Font("Chalkduster", Font.BOLD, 11));
 		rdbtnP3.setBounds(675, 7, 52, 26);
 		bottomPanel.add(rdbtnP3);
 		
-		JRadioButton rdbtnP4 = new JRadioButton("P4");
+        rdbtnP4 = new JRadioButton("P4");
 		rdbtnP4.setForeground(new Color(212,17,89));
 		rdbtnP4.setFont(new Font("Chalkduster", Font.BOLD, 11));
 		rdbtnP4.setBounds(721, 7, 52, 26);
@@ -702,6 +697,7 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
                     btnP4.setEnabled(true);
                 }
 				next.next(handler, frmTakeTurn);
+                resetRound();
 				if(next.isFlag()) finalScore();
 			}
 		});
@@ -711,7 +707,7 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 		btnUp.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				if((rdbtnRobot1.isSelected() || rdbtnRobot2.isSelected() || rdbtnRobot3.isSelected() || rdbtnRobot4.isSelected()) && (rdbtnP1.isSelected() || rdbtnP2.isSelected() || rdbtnP3.isSelected() || rdbtnP4.isSelected())) {
+                if(!next.isFlag() && (rdbtnRobot1.isSelected() || rdbtnRobot2.isSelected() || rdbtnRobot3.isSelected() || rdbtnRobot4.isSelected()) && (rdbtnP1.isSelected() || rdbtnP2.isSelected() || rdbtnP3.isSelected() || rdbtnP4.isSelected())) {
 					move = new Move(handler, frmTakeTurn, next);
 					if(rdbtnP1.isSelected()==true && bidController.compareMoves("Player1", moves)==false) {
 						moves +=1;
@@ -741,7 +737,7 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 		
 		btnDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if((rdbtnRobot1.isSelected() || rdbtnRobot2.isSelected() || rdbtnRobot3.isSelected() || rdbtnRobot4.isSelected()) && (rdbtnP1.isSelected() || rdbtnP2.isSelected() || rdbtnP3.isSelected() || rdbtnP4.isSelected())) {
+                if(!next.isFlag() && (rdbtnRobot1.isSelected() || rdbtnRobot2.isSelected() || rdbtnRobot3.isSelected() || rdbtnRobot4.isSelected()) && (rdbtnP1.isSelected() || rdbtnP2.isSelected() || rdbtnP3.isSelected() || rdbtnP4.isSelected())) {
 					move = new Move(handler, frmTakeTurn, next);
 					if(rdbtnP1.isSelected()==true && bidController.compareMoves("Player1", moves)==false) {
 						moves +=1;
@@ -770,7 +766,7 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 		
 		btnRight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if((rdbtnRobot1.isSelected() || rdbtnRobot2.isSelected() || rdbtnRobot3.isSelected() || rdbtnRobot4.isSelected()) && (rdbtnP1.isSelected() || rdbtnP2.isSelected() || rdbtnP3.isSelected() || rdbtnP4.isSelected())) {
+                if(!next.isFlag() && (rdbtnRobot1.isSelected() || rdbtnRobot2.isSelected() || rdbtnRobot3.isSelected() || rdbtnRobot4.isSelected()) && (rdbtnP1.isSelected() || rdbtnP2.isSelected() || rdbtnP3.isSelected() || rdbtnP4.isSelected())) {
 					move = new Move(handler, frmTakeTurn, next);
 					if(rdbtnP1.isSelected()==true && bidController.compareMoves("Player1", moves)==false) {
 						moves +=1;
@@ -800,7 +796,7 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 		
 		btnLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if((rdbtnRobot1.isSelected() || rdbtnRobot2.isSelected() || rdbtnRobot3.isSelected() || rdbtnRobot4.isSelected()) && (rdbtnP1.isSelected() || rdbtnP2.isSelected() || rdbtnP3.isSelected() || rdbtnP4.isSelected())) {
+                if(!next.isFlag() && (rdbtnRobot1.isSelected() || rdbtnRobot2.isSelected() || rdbtnRobot3.isSelected() || rdbtnRobot4.isSelected()) && (rdbtnP1.isSelected() || rdbtnP2.isSelected() || rdbtnP3.isSelected() || rdbtnP4.isSelected())) {
 					move = new Move(handler, frmTakeTurn, next);
 					if(rdbtnP1.isSelected()==true && bidController.compareMoves("Player1", moves)==false) {
 						moves +=1;
@@ -938,6 +934,97 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 		
 	}
 	
+    private JRadioButton[] robotButtons() { return new JRadioButton[]{rdbtnRobot1,rdbtnRobot2,rdbtnRobot3,rdbtnRobot4}; }
+    private JRadioButton[] playerButtons() { return new JRadioButton[]{rdbtnP1,rdbtnP2,rdbtnP3,rdbtnP4}; }
+    private int selected(JRadioButton[] buttons) {
+        for(int i=0;i<buttons.length;i++) if(buttons[i].isSelected()) return i+1;
+        return 0;
+    }
+    private SaveData snapshot() {
+        int[][] positions = SessionState.positions(handler);
+        int palette = sc.isDeuteranope()?1:sc.isProtanope()?2:sc.isTritanope()?3:0;
+        int players = (sc.isPlayer1()?1:0)|(sc.isPlayer2()?2:0)|(sc.isPlayer3()?4:0)|(sc.isPlayer4()?8:0);
+        int[] bids={Integer.parseInt(lblp1bid.getText()),Integer.parseInt(lblp2bid.getText()),Integer.parseInt(lblp3bid.getText()),Integer.parseInt(lblp4bid.getText())};
+        return new SaveData(sc.isComplex(),sc.isHintsEnabled(),palette,players,positions[0],positions[1],next.getCurrentToken(),next.isFlag(),
+            new int[]{p1s,p2s,p3s,p4s},bids,moves,selected(robotButtons()),selected(playerButtons()),gameTmr==null?-1:gameTmr.remainingSeconds());
+    }
+    private void saveSession() {
+        JFileChooser picker = new JFileChooser(new java.io.File("."));
+        picker.setDialogTitle("Save Ricochet game");
+        picker.setSelectedFile(new java.io.File("ricochet.rrsave"));
+        picker.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Ricochet saves (*.rrsave)","rrsave"));
+        if(picker.showSaveDialog(frmTakeTurn)!=JFileChooser.APPROVE_OPTION) return;
+        java.io.File file=picker.getSelectedFile();
+        if(!file.getName().endsWith(".rrsave")) file=new java.io.File(file.getPath()+".rrsave");
+        if(file.exists() && JOptionPane.showConfirmDialog(frmTakeTurn,"Replace this saved game?","Save game",JOptionPane.YES_NO_OPTION)!=JOptionPane.YES_OPTION) return;
+        try {
+            ResourceManager.save(snapshot(),file.getPath());
+            JOptionPane.showMessageDialog(frmTakeTurn,"Game saved to " + file.getName(),"Save game",JOptionPane.INFORMATION_MESSAGE);
+        } catch(Exception ex) {
+            JOptionPane.showMessageDialog(frmTakeTurn,"Unable to save: "+ex.getMessage(),"Save game",JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void restoreSession(SaveData saved) {
+        next.restore(saved.token(),saved.complete(),handler);
+        int[] scores=saved.scores(), bids=saved.bids();
+        p1s=scores[0];p2s=scores[1];p3s=scores[2];p4s=scores[3];
+        JLabel[] scoreLabels={lblp1score,lblp2score,lblp3score,lblp4score};
+        JLabel[] bidLabels={lblp1bid,lblp2bid,lblp3bid,lblp4bid};
+        JButton[] bidButtons={btnP1,btnP2,btnP3,btnP4};
+        for(int i=0;i<4;i++) {
+            scoreLabels[i].setText(String.valueOf(scores[i]));
+            bidLabels[i].setText(String.valueOf(bids[i]));
+            if(bids[i]>0) bidController.newBid("Player"+(i+1),bids[i]);
+            bidButtons[i].setEnabled(saved.token()>0 && !saved.complete() && (saved.players()&(1<<i))!=0);
+            robotButtons()[i].setSelected(saved.selectedRobot()==i+1);
+            playerButtons()[i].setSelected(saved.selectedPlayer()==i+1);
+        }
+        moves=saved.moves();lblMoveCount.setText(String.valueOf(moves));
+        if(saved.timerSeconds()>=0) { startTimer(saved.timerSeconds());flag=true; }
+        updateRoundControls();
+        frmTakeTurn.setTitle("Ricochet Robots — loaded game");
+    }
+    private void resetRound() {
+        bidController = new BidController();
+        moves = 0; lblMoveCount.setText("0"); flag = false;
+        for(JLabel label:new JLabel[]{lblp1bid,lblp2bid,lblp3bid,lblp4bid}) label.setText("0");
+        if(gameTmr != null) { gameTmr.getTimer().stop();rightPanel.remove(gameTmr);gameTmr=null; }
+        rightPanel.revalidate();rightPanel.repaint();
+        updateRoundControls();
+    }
+    private void updateRoundControls() {
+        for(JButton button:new JButton[]{btnUp,btnDown,btnLeft,btnRight,btnToken}) button.setEnabled(!next.isFlag());
+        boolean[] active={sc.isPlayer1(),sc.isPlayer2(),sc.isPlayer3(),sc.isPlayer4()};
+        JButton[] buttons={btnP1,btnP2,btnP3,btnP4};
+        for(int i=0;i<4;i++) buttons[i].setEnabled(active[i] && next.getCurrentToken()>0 && !next.isFlag());
+    }
+    private void returnToMenu() {
+        if(JOptionPane.showConfirmDialog(frmTakeTurn,"Return to the main menu? Save first to keep your progress.","Return to menu",JOptionPane.YES_NO_OPTION)!=JOptionPane.YES_OPTION) return;
+        if(gameTmr!=null) gameTmr.getTimer().stop();
+        frmTakeTurn.dispose();
+        new MainMenu();
+    }
+    private void showHint(JMenuItem item) {
+        if(next.isFlag()) { JOptionPane.showMessageDialog(frmTakeTurn,"This game is complete.");return; }
+        final int target=next.getCurrentToken();
+        if(target==0) { JOptionPane.showMessageDialog(frmTakeTurn,"Choose a token before asking for a hint.");return; }
+        final int[][] before=SessionState.positions(handler);
+        final Handler snapshot=HintSolver.snapshot(handler);
+        item.setEnabled(false);
+        new SwingWorker<String,Void>() {
+            @Override protected String doInBackground() { return HintSolver.solve(snapshot,target); }
+            @Override protected void done() {
+                item.setEnabled(true);
+                if(!isGameOpen()) return;
+                try {
+                    String message=target==next.getCurrentToken() && java.util.Arrays.deepEquals(before,SessionState.positions(handler))
+                        ? get() : "The board changed while searching. Request a new hint.";
+                    JOptionPane.showMessageDialog(frmTakeTurn,message,"Hint",JOptionPane.INFORMATION_MESSAGE);
+                } catch(Exception ex) { JOptionPane.showMessageDialog(frmTakeTurn,"Unable to calculate this hint. Try again.","Hint",JOptionPane.ERROR_MESSAGE); }
+            }
+        }.execute();
+    }
+
 	public void makeMenuBar(JFrame frame){
 				//menu bar
 				JMenuBar menubar = new JMenuBar();
@@ -957,35 +1044,12 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 				saveItem.setForeground(new Color(48,52,109));
 				fileMenu.add(saveItem);
 				
-				saveItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						SaveData data = new SaveData();
-						data.setBtnP1(btnP1);
-						data.setBtnP2(btnP2);
-						data.setBtnP3(btnP3);
-						data.setBtnP4(btnP4);
-						data.setLblP1(lblP1);
-						data.setLblp1bid(lblp1bid);
-						data.setLblP2(lblP2);
-						data.setLblp2bid(lblp2bid);
-						data.setLblP3(lblP3);
-						data.setLblp3bid(lblp3bid);
-						data.setLblP4(lblP4);
-						data.setLblp4bid(lblp4bid);
-						data.setDifficultyType(sc.getDifficultyType());
-						
-						
-						
-						try {
-							ResourceManager.save(data,  "1.save");
-						} 
-						catch(Exception ex) {
-							System.out.println("Unable to save: "+ ex.getMessage());
-						}
-						
-				}
-				});
-				
+                saveItem.addActionListener(e -> saveSession());
+                JMenuItem returnItem = new JMenuItem("Return to Main Menu");
+                returnItem.addActionListener(e -> returnToMenu());
+                fileMenu.add(returnItem);
+
+
 				JMenuItem manItem = new JMenuItem("Manual");
 				manItem.setHorizontalAlignment(SwingConstants.CENTER);
 				manItem.setFont(new Font("Chalkduster", Font.BOLD, 14));
@@ -1000,6 +1064,7 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 				JMenuItem hintItem = new JMenuItem("Hint");
 				hintItem.setHorizontalAlignment(SwingConstants.CENTER);
 				hintItem.setFont(new Font("Chalkduster", Font.BOLD, 14));
+                hintItem.addActionListener(e -> showHint(hintItem));
 				if(sc.isHintsEnabled()) {
 					fileMenu.add(hintItem);
 					
@@ -1053,7 +1118,7 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 					}
 				}
 				else {
-					JOptionPane.showMessageDialog(frmTakeTurn, "A new bid must be less than a previous bid. Please try Again.");
+                    JOptionPane.showMessageDialog(frmTakeTurn, "A bid must be positive and lower than your previous bid. Please try again.");
 				}
 			}
 			
@@ -1072,8 +1137,10 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 	public void setPlayer(int player) {
 		this.player = player;
 	}
-	public void Timer() {
-		gameTmr = new GameTimer();
+    public void Timer() { startTimer(60); }
+    private void startTimer(int seconds) {
+        if(gameTmr!=null) { gameTmr.getTimer().stop();rightPanel.remove(gameTmr); }
+        gameTmr = new GameTimer(seconds);
 		gameTmr.setBounds(67, 15, 58, 100);
 		frmTakeTurn.getContentPane().add(gameTmr);		
 		rightPanel.add(gameTmr);
@@ -1094,7 +1161,12 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 		if(rdbtnRobot4.isSelected()) {
 			move.up(4);
 		}
-		if(move.isFlag()) setScore(move.getPlayer()); move.setFlag(false);
+        if(move.isFlag()) {
+            setScore(move.getPlayer());
+            resetRound();
+            if(next.isFlag()) finalScore();
+        }
+        move.setFlag(false);
 	}
 	
 	public void moveRobotDown(int i) {
@@ -1112,7 +1184,12 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 		if(rdbtnRobot4.isSelected()) {
 			move.down(4);
 		}
-		if(move.isFlag()) setScore(move.getPlayer()); move.setFlag(false);
+        if(move.isFlag()) {
+            setScore(move.getPlayer());
+            resetRound();
+            if(next.isFlag()) finalScore();
+        }
+        move.setFlag(false);
 	}
 	public void moveRobotRight(int i) {
 		move.setTokenNum(next.getCurrentToken());
@@ -1129,7 +1206,12 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 		if(rdbtnRobot4.isSelected()) {
 			move.right(4);
 		}
-		if(move.isFlag()) setScore(move.getPlayer()); move.setFlag(false);
+        if(move.isFlag()) {
+            setScore(move.getPlayer());
+            resetRound();
+            if(next.isFlag()) finalScore();
+        }
+        move.setFlag(false);
 	}
 	public void moveRobotLeft(int i) {
 		move.setTokenNum(next.getCurrentToken());
@@ -1146,7 +1228,12 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 		if(rdbtnRobot4.isSelected()) {
 			move.left(4);
 		}
-		if(move.isFlag()) setScore(move.getPlayer()); move.setFlag(false);
+        if(move.isFlag()) {
+            setScore(move.getPlayer());
+            resetRound();
+            if(next.isFlag()) finalScore();
+        }
+        move.setFlag(false);
 	}
 	
 	public void setScore(int p) {
@@ -1156,17 +1243,16 @@ public class GameGUI extends JFrame implements MouseListener, WindowListener {
 		if(p==4) {p4s+=1; lblp4score.setText(""+p4s+"");}
 	}
 	
-	public void finalScore() {
-		if(p1s>p2s && p1s>p3s && p1s>p4s) {
-			JOptionPane.showMessageDialog(frmTakeTurn, "The winner is Player 1 - GAME OVER");
-		} else if(p2s>p1s && p2s>p3s && p2s>p4s) {
-			JOptionPane.showMessageDialog(frmTakeTurn, "The winner is Player 2 - GAME OVER");
-		} else if(p3s>p1s && p3s>p2s && p3s>p4s) {
-			JOptionPane.showMessageDialog(frmTakeTurn, "The winner is Player 3 - GAME OVER");
-		} else if(p4s>p1s && p4s>p2s && p4s>p3s) {
-			JOptionPane.showMessageDialog(frmTakeTurn, "The winner is Player 4 - GAME OVER");
-		}
-	}
+    public void finalScore() {
+        int[] scores={p1s,p2s,p3s,p4s};
+        boolean[] active={sc.isPlayer1(),sc.isPlayer2(),sc.isPlayer3(),sc.isPlayer4()};
+        int best=-1;
+        for(int i=0;i<4;i++) if(active[i]) best=Math.max(best,scores[i]);
+        java.util.List<String> winners=new java.util.ArrayList<>();
+        for(int i=0;i<4;i++) if(active[i] && scores[i]==best) winners.add("Player "+(i+1));
+        JOptionPane.showMessageDialog(frmTakeTurn,String.join(" and ",winners)+(winners.size()==1?" wins":" tie")+" with "+best+" tokens. Game over.");
+    }
+
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub

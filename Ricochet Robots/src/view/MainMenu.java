@@ -50,13 +50,25 @@ public class MainMenu extends JFrame implements ActionListener {
 		btnLoadGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				try {
-					SaveData data = (SaveData) ResourceManager.load("1.save");
-					
-				}
-				catch(Exception ex) {
-					System.out.println("Unable to load save data: "+ ex.getMessage());
-				}
+                JFileChooser picker = new JFileChooser(new java.io.File("."));
+                picker.setDialogTitle("Load Ricochet game");
+                picker.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Ricochet saves (*.rrsave)", "rrsave"));
+                if (picker.showOpenDialog(frmRicochetRobots) != JFileChooser.APPROVE_OPTION) return;
+                try {
+                    SaveData data = ResourceManager.load(picker.getSelectedFile().getPath());
+                    // Construct and validate the board before changing global settings or closing the menu.
+                    Runnable start;
+                    if (data.complex()) {
+                        GameBoardComplex board = new GameBoardComplex(data); start = board::start;
+                    } else {
+                        GameBoard board = new GameBoard(data); start = board::start;
+                    }
+                    Settings.use(data.settings());
+                    start.run();
+                    frmRicochetRobots.dispose();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frmRicochetRobots, "Unable to load: " + ex.getMessage(), "Load game", JOptionPane.ERROR_MESSAGE);
+                }
 				
 			}
 		});

@@ -8,6 +8,9 @@ public class SettingsController extends ColorPalette{
 
 	Difficulty difficultyType;
 	boolean hintsEnabled;
+    private boolean complex;
+    public boolean isComplex() { return complex; }
+    public void setComplex(boolean value) { complex = value; }
 	boolean player1, player2, player3, player4;
 	
 	public boolean isPlayer1() {
