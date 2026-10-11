@@ -1,109 +1,41 @@
 package controller;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
+/** Plain game state; no Swing components or executable Java serialization. */
+public record SaveData(boolean complex, boolean hints, int palette, int players,
+        int[] x, int[] y, int token, boolean complete, int[] scores, int[] bids,
+        int moves, int selectedRobot, int selectedPlayer, int timerSeconds) {
+    public SaveData {
+        x = copy(x); y = copy(y); scores = copy(scores); bids = copy(bids);
+        range(palette, 0, 3); range(players, 1, 15); range(token, 0, 16);
+        range(moves, 0, 1000000); range(selectedRobot, 0, 4);
+        range(selectedPlayer, 0, 4); range(timerSeconds, -1, 60);
+        if (complete && token != 1) throw new IllegalArgumentException("Invalid completed round");
+        if (selectedPlayer > 0 && (players & (1 << (selectedPlayer - 1))) == 0)
+            throw new IllegalArgumentException("Selected player is not in this game");
+        for (int i = 0; i < 4; i++) {
+            range(x[i], 6, 566); range(y[i], 6, 566);
+            range(scores[i], 0, 16); range(bids[i], 0, 1000000);
+        }
+    }
+    private static int[] copy(int[] values) {
+        if (values == null || values.length != 4) throw new IllegalArgumentException("Expected four values");
+        return values.clone();
+    }
+    private static void range(int n, int min, int max) {
+        if (n < min || n > max) throw new IllegalArgumentException("Saved value outside its valid range");
+    }
+    @Override public int[] x() { return x.clone(); }
+    @Override public int[] y() { return y.clone(); }
+    @Override public int[] scores() { return scores.clone(); }
+    @Override public int[] bids() { return bids.clone(); }
 
-public class SaveData implements java.io.Serializable {
-	
-	private static final long serialVersionUID = 2L;
-	
-	private int player;
-	private JLabel lblP1, lblP2, lblP3, lblP4,lblp1bid, lblp2bid, lblp3bid, lblp4bid;
-	private JButton btnP1, btnP2, btnP3, btnP4;
-	private Difficulty difficultyType;
-	private boolean hintsEnabled;
-	
-	public Difficulty getDifficultyType() {
-		return difficultyType;
-	}
-	public void setDifficultyType(Difficulty difficultyType) {
-		this.difficultyType = difficultyType;
-	}
-	public boolean isHintsEnabled() {
-		return hintsEnabled;
-	}
-	public void setHintsEnabled(boolean hintsEnabled) {
-		this.hintsEnabled = hintsEnabled;
-	}
-	public int getPlayer() {
-		return player;
-	}
-	public void setPlayer(int player) {
-		this.player = player;
-	}
-	public JLabel getLblP1() {
-		return lblP1;
-	}
-	public void setLblP1(JLabel lblP1) {
-		this.lblP1 = lblP1;
-	}
-	public JLabel getLblP2() {
-		return lblP2;
-	}
-	public void setLblP2(JLabel lblP2) {
-		this.lblP2 = lblP2;
-	}
-	public JLabel getLblP3() {
-		return lblP3;
-	}
-	public void setLblP3(JLabel lblP3) {
-		this.lblP3 = lblP3;
-	}
-	public JLabel getLblP4() {
-		return lblP4;
-	}
-	public void setLblP4(JLabel lblP4) {
-		this.lblP4 = lblP4;
-	}
-	public JLabel getLblp1bid() {
-		return lblp1bid;
-	}
-	public void setLblp1bid(JLabel lblp1bid) {
-		this.lblp1bid = lblp1bid;
-	}
-	public JLabel getLblp2bid() {
-		return lblp2bid;
-	}
-	public void setLblp2bid(JLabel lblp2bid) {
-		this.lblp2bid = lblp2bid;
-	}
-	public JLabel getLblp3bid() {
-		return lblp3bid;
-	}
-	public void setLblp3bid(JLabel lblp3bid) {
-		this.lblp3bid = lblp3bid;
-	}
-	public JLabel getLblp4bid() {
-		return lblp4bid;
-	}
-	public void setLblp4bid(JLabel lblp4bid) {
-		this.lblp4bid = lblp4bid;
-	}
-	public JButton getBtnP1() {
-		return btnP1;
-	}
-	public void setBtnP1(JButton btnP1) {
-		this.btnP1 = btnP1;
-	}
-	public JButton getBtnP2() {
-		return btnP2;
-	}
-	public void setBtnP2(JButton btnP2) {
-		this.btnP2 = btnP2;
-	}
-	public JButton getBtnP3() {
-		return btnP3;
-	}
-	public void setBtnP3(JButton btnP3) {
-		this.btnP3 = btnP3;
-	}
-	public JButton getBtnP4() {
-		return btnP4;
-	}
-	public void setBtnP4(JButton btnP4) {
-		this.btnP4 = btnP4;
-	}
-	
-	
-
+    public SettingsController settings() {
+        SettingsController result = new SettingsController();
+        result.setComplex(complex); result.setHintsEnabled(hints);
+        result.setNormal(palette == 0); result.setDeuteranope(palette == 1);
+        result.setProtanope(palette == 2); result.setTritanope(palette == 3);
+        result.setPlayer1((players & 1) != 0); result.setPlayer2((players & 2) != 0);
+        result.setPlayer3((players & 4) != 0); result.setPlayer4((players & 8) != 0);
+        return result;
+    }
 }

@@ -16,18 +16,33 @@ public class ChangeToken {
 			st.push(i);
 		}
 	}
-	public void next(Handler handler, JFrame frmTakeTurn) {
-		if(st.isEmpty() ) {
-			handler.addObject(new Barrier(270, 270, 50, 50, ID.Barrier));
-			JOptionPane.showMessageDialog(frmTakeTurn, "All tokens have been taken");
-			setFlag(true);
-		}else {
-			setCurrentToken(st.pop());
-			handler.addObject(new Barrier(270, 270, 50, 50, ID.Barrier));
-			handler.addObject(new Token(276, 276, 36, 36, getIDToken(getCurrentToken()), getCurrentToken()));
-		}
-	}
-	
+    public void next(Handler handler, JFrame frame) {
+        if (st.isEmpty()) {
+            flag = true;
+            renderIndicator(handler);
+            JOptionPane.showMessageDialog(frame, "All tokens have been taken");
+        } else {
+            currentToken = st.pop();
+            renderIndicator(handler);
+        }
+    }
+    public void restore(int token, boolean completed, Handler handler) {
+        if (token < 0 || token > 16 || (completed && token != 1))
+            throw new IllegalArgumentException("Invalid token state");
+        currentToken = token;
+        flag = completed;
+        st.clear();
+        for (int i=1; i <= (token == 0 ? 16 : token-1); i++) st.push(i);
+        renderIndicator(handler);
+    }
+    public int remaining() { return st.size(); }
+    private void renderIndicator(Handler handler) {
+        handler.object.removeIf(o -> (o instanceof Token && o.getWidth() == 36 && o.getX() == 276)
+            || (o.getId() == ID.Barrier && o.getX() == 270 && o.getWidth() == 50));
+        if (currentToken > 0 && !flag)
+            handler.addObject(new Token(276, 276, 36, 36, getIDToken(currentToken), currentToken));
+    }
+
 	public boolean isFlag() {
 		return flag;
 	}

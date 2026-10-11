@@ -49,22 +49,6 @@ public class Settings extends JFrame implements ActionListener {
 		
 		
 		
-		// Difficulty Buttons
-		
-		JRadioButton rdbtnEasy = new JRadioButton("EASY");
-		rdbtnEasy.setForeground(new Color(102,178,255));
-		rdbtnEasy.setFont(new Font("Chalkduster", Font.BOLD, 15));
-		rdbtnEasy.setHorizontalAlignment(SwingConstants.LEFT);
-		rdbtnEasy.setBounds(116, 187, 109, 38);
-		frmSettings.getContentPane().add(rdbtnEasy);
-		
-		JRadioButton rdbtnDifficult = new JRadioButton("HARD");
-		rdbtnDifficult.setForeground(new Color(255,178,102));
-		rdbtnDifficult.setFont(new Font("Chalkduster", Font.BOLD, 15));
-		rdbtnDifficult.setHorizontalAlignment(SwingConstants.LEFT);
-		rdbtnDifficult.setBounds(246, 187, 109, 38);
-		frmSettings.getContentPane().add(rdbtnDifficult);
-		
 		//Color Buttons
 		
 		JRadioButton rdbtnNormal = new JRadioButton("Normal");
@@ -115,12 +99,6 @@ public class Settings extends JFrame implements ActionListener {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setBounds(226, 69, 129, 24);
 		frmSettings.getContentPane().add(lblNewLabel);
-		
-		JLabel lblDifficulty = new JLabel("Difficulty:");
-		lblDifficulty.setForeground(new Color(20,12,28));
-		lblDifficulty.setFont(new Font("Noteworthy", Font.BOLD, 15));
-		lblDifficulty.setBounds(48, 150, 76, 25);
-		frmSettings.getContentPane().add(lblDifficulty);
 		
 		JLabel lblBoard = new JLabel("Board:");
 		lblBoard.setForeground(new Color(20,12,28));
@@ -199,7 +177,7 @@ public class Settings extends JFrame implements ActionListener {
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				if((chckbxPlayer1.isSelected() || chckbxPlayer2.isSelected() || chckbxPlayer3.isSelected() || chckbxPlayer4.isSelected())&&(rdbtnEasy.isSelected() || rdbtnDifficult.isSelected())&&(rdbtnSimple.isSelected() || rdbtnComplex.isSelected())&&(rdbtnEnable.isSelected() || rdbtnDisable.isSelected())&&(rdbtnNormal.isSelected() || rdbtnDeut.isSelected() || rdbtnProt.isSelected() || rdbtnTrit.isSelected())){
+                if((chckbxPlayer1.isSelected() || chckbxPlayer2.isSelected() || chckbxPlayer3.isSelected() || chckbxPlayer4.isSelected())&&(rdbtnSimple.isSelected() || rdbtnComplex.isSelected())&&(rdbtnEnable.isSelected() || rdbtnDisable.isSelected())&&(rdbtnNormal.isSelected() || rdbtnDeut.isSelected() || rdbtnProt.isSelected() || rdbtnTrit.isSelected())){
 					
 					if(chckbxPlayer1.isSelected()) {
 						sc.setPlayer1(true);
@@ -214,14 +192,6 @@ public class Settings extends JFrame implements ActionListener {
 						sc.setPlayer4(true);
 					}
 					
-					if(rdbtnSimple.isSelected()) {
-						frmSettings.setVisible(false);
-						gameSimple.start();
-					}
-					if(rdbtnComplex.isSelected()) {
-						frmSettings.setVisible(false);	
-						gameComplex.start();
-					}
 					if(rdbtnEnable.isSelected()) {
 						sc.setHintsEnabled(true);
 					}
@@ -232,6 +202,16 @@ public class Settings extends JFrame implements ActionListener {
 					if(rdbtnDeut.isSelected()) {sc.setDeuteranope(true);;}
 					if(rdbtnProt.isSelected()) {sc.setProtanope(true);;}
 					if(rdbtnTrit.isSelected()) {sc.setTritanope(true);;}
+                    sc.setComplex(rdbtnComplex.isSelected());
+                    if(rdbtnSimple.isSelected()) {
+                        frmSettings.setVisible(false);
+                        gameSimple.start();
+                    }
+                    if(rdbtnComplex.isSelected()) {
+                        frmSettings.setVisible(false);
+                        gameComplex.start();
+                    }
+
 				}
 				else {
 					JOptionPane.showMessageDialog(frmSettings, "Each setting must be selected");
@@ -254,36 +234,6 @@ public class Settings extends JFrame implements ActionListener {
 		
 		
 		//Action Listeners for each component
-		
-		rdbtnEasy.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				if(rdbtnEasy.isSelected()) {
-					
-					rdbtnDifficult.setSelected(false);
-					
-				}
-				else {
-					rdbtnDifficult.setSelected(true);
-				}
-				
-			}
-		});
-		
-		rdbtnDifficult.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				if(rdbtnDifficult.isSelected()) {
-					
-					rdbtnEasy.setSelected(false);
-					
-				}
-				else {
-					rdbtnEasy.setSelected(true);
-				}
-				
-			}
-		});
 		
 		rdbtnSimple.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -393,6 +343,8 @@ public class Settings extends JFrame implements ActionListener {
 		
 	}
 	
+    public static void use(SettingsController settings) { sc = settings; }
+
 	public static Object object() {
 		return sc;
 	}

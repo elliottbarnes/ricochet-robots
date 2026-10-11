@@ -13,7 +13,10 @@ public class GameTimer extends JPanel {
 	private Timer timer;
 	private SettingsController sc;
 	
-	public GameTimer() {
+    public GameTimer() { this(60); }
+    public int remainingSeconds() { return Math.max(0, Math.min(60, count)); }
+    public GameTimer(int seconds) {
+        count = seconds + 1;
 	
 		
 		sc = (SettingsController) Settings.object();

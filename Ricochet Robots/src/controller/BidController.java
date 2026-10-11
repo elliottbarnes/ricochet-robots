@@ -10,6 +10,7 @@ public class BidController {
 	}
 	
 	public boolean newBid(String player, int bidValue) { 
+         if (bidValue <= 0) return false;
 		 Bid bid =  createBid(player, bidValue);
 		 boolean validBid = checkBidValidity(bid);
 		 if(validBid) {
